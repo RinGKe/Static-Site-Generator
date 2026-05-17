@@ -1,3 +1,5 @@
+from functions import *
+from htmlnode import *
 from textnode import *
 
 
