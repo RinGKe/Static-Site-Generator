@@ -96,7 +96,7 @@ class TestInlineMarkdown(unittest.TestCase):
         )
         self.assertListEqual([("to boot dev", "https://www.boot.dev")], matches)
 
-        matches2 = extract_markdown_links(
+        matches = extract_markdown_links(
             "This is text with a [to boot dev](https://www.boot.dev) and another [to google](https://www.google.com)"
         )
         self.assertListEqual(
@@ -104,5 +104,5 @@ class TestInlineMarkdown(unittest.TestCase):
                 ("to boot dev", "https://www.boot.dev"),
                 ("to google", "https://www.google.com"),
             ],
-            matches2,
+            matches,
         )
