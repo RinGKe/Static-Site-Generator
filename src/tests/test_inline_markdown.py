@@ -1,6 +1,6 @@
 import unittest
 
-from src.inline_markdown import split_nodes_delimiter
+from src.inline_markdown import *
 from src.textnode import *
 
 
@@ -72,3 +72,37 @@ class TestInlineMarkdown(unittest.TestCase):
 
         with self.assertRaises(Exception):
             new_errors = split_nodes_delimiter([errornode], "**", TextType.BOLD)
+
+    def test_extract_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+        matches2 = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and a second ![image2](https://i.imgur.com/zjjcJKZ2.png)"
+        )
+        self.assertListEqual(
+            [
+                ("image", "https://i.imgur.com/zjjcJKZ.png"),
+                ("image2", "https://i.imgur.com/zjjcJKZ2.png"),
+            ],
+            matches2,
+        )
+
+    def test_extract_links(self):
+        matches = extract_markdown_links(
+            "This is text with a [to boot dev](https://www.boot.dev)"
+        )
+        self.assertListEqual([("to boot dev", "https://www.boot.dev")], matches)
+
+        matches2 = extract_markdown_links(
+            "This is text with a [to boot dev](https://www.boot.dev) and another [to google](https://www.google.com)"
+        )
+        self.assertListEqual(
+            [
+                ("to boot dev", "https://www.boot.dev"),
+                ("to google", "https://www.google.com"),
+            ],
+            matches2,
+        )
