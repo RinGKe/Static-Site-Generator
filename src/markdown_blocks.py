@@ -41,3 +41,26 @@ def block_to_block_type(block):
         return BlockType.ORDERED_LIST
 
     return BlockType.PARAGRAPH
+
+
+def block_type_to_html(type: BlockType, block):
+    match type:
+        case BlockType.PARAGRAPH:
+            return
+        case BlockType.HEADING:
+            return
+        case BlockType.CODE:
+            return
+        case BlockType.QUOTE:
+            return
+        case BlockType.UNORDERED_LIST:
+            return
+        case BlockType.ORDERED_LIST:
+            return
+
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for b in blocks:
+        type = block_to_block_type(b)
+        node = block_type_to_html(type, block)
