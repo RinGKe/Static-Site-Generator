@@ -1,6 +1,9 @@
 import re
 from enum import Enum
 
+from src.htmlnode import *
+from src.inline_markdown import *
+
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -43,24 +46,55 @@ def block_to_block_type(block):
     return BlockType.PARAGRAPH
 
 
-def block_type_to_html(type: BlockType, block):
-    match type:
-        case BlockType.PARAGRAPH:
-            return
-        case BlockType.HEADING:
-            return
-        case BlockType.CODE:
-            return
-        case BlockType.QUOTE:
-            return
-        case BlockType.UNORDERED_LIST:
-            return
-        case BlockType.ORDERED_LIST:
-            return
-
-
 def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
-    for b in blocks:
-        type = block_to_block_type(b)
-        node = block_type_to_html(type, block)
+    children = [block_type_to_html(x) for x in blocks]
+    return ParentNode(tag="div", children=children)
+
+
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
+    html_nodes = [text_node_to_html_node(x) for x in text_nodes]
+    return html_nodes
+
+
+def block_type_to_html(block):
+    block_type = block_to_block_type(block)
+    match block_type:
+        case BlockType.PARAGRAPH:
+            block = " ".join(block.splitlines())
+            return ParentNode(tag="p", children=text_to_children(block))
+
+        case BlockType.HEADING:
+            num = len(block) - len(block.lstrip("#"))
+            block = " ".join(block.strip("#").strip().splitlines())
+            return ParentNode(tag=f"h{num}", children=text_to_children(block))
+
+        case BlockType.CODE:
+            block = block.strip("`").lstrip("\n")
+            code_node = text_node_to_html_node(
+                TextNode(
+                    text=block,
+                    text_type=TextType.CODE,
+                )
+            )
+            return ParentNode(tag="pre", children=[code_node])
+
+        case BlockType.QUOTE:
+            lines = [x.strip(">").strip() for x in block.splitlines()]
+            block = " ".join(lines)
+            return ParentNode(tag="blockquote", children=text_to_children(block))
+
+        case BlockType.UNORDERED_LIST:
+            wraps = [
+                ParentNode(tag="li", children=text_to_children(x[2:]))
+                for x in block.splitlines()
+            ]
+            return ParentNode(tag="ul", children=wraps)
+
+        case BlockType.ORDERED_LIST:
+            wraps = [
+                ParentNode(tag="li", children=text_to_children(x[3:]))
+                for x in block.splitlines()
+            ]
+            return ParentNode(tag="ol", children=wraps)

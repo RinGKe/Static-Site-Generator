@@ -18,7 +18,6 @@ class HTMLNode:
         result = ""
         if not self.props:
             return result
-            print("no props")
         for p in self.props:
             result += f' {p}="{self.props[p]}"'
         return result
