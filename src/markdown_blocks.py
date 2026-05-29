@@ -1,8 +1,8 @@
 import re
 from enum import Enum
 
-from src.htmlnode import *
-from src.inline_markdown import *
+from htmlnode import *
+from inline_markdown import *
 
 
 class BlockType(Enum):
@@ -98,3 +98,11 @@ def block_type_to_html(block):
                 for x in block.splitlines()
             ]
             return ParentNode(tag="ol", children=wraps)
+
+
+def extract_title(markdown):
+    lines = markdown.splitlines()
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:]
+    raise Exception("No h1 header")

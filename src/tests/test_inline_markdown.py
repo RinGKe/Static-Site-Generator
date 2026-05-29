@@ -1,7 +1,7 @@
 import unittest
 
-from src.inline_markdown import *
-from src.textnode import *
+from inline_markdown import *
+from textnode import *
 
 
 class TestInlineMarkdown(unittest.TestCase):
