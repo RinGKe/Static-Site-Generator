@@ -1,10 +1,12 @@
 import os
 import shutil
+import sys
 from pathlib import Path
 
 from markdown_blocks import extract_title, markdown_to_html_node
 
-target = "./public"
+basepath = sys.argv[1] if len(sys.argv) > 1 else "/"
+target = "./docs" if len(sys.argv) > 1 else "./local"
 source = "./static"
 
 
@@ -17,7 +19,7 @@ def main():
     copy_files(target, source)
 
     print("Generating content...")
-    generate_pages_recursive("./content", "./template.html", "./public")
+    generate_pages_recursive("./content", "./template.html", target)
 
 
 def copy_files(tar_dir, cur_dir):
@@ -57,8 +59,11 @@ def generate_page(from_path: str, template_path: str, dest_path: str | Path) -> 
         template = file.read()
     html_string = markdown_to_html_node(content).to_html()
     title = extract_title(content)
-    html_page = template.replace("{{ Title }}", title).replace(
-        "{{ Content }}", html_string
+    html_page = (
+        template.replace("{{ Title }}", title)
+        .replace("{{ Content }}", html_string)
+        .replace('href="/', f'href="{basepath}')
+        .replace('src="/', f'src="{basepath}')
     )
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
